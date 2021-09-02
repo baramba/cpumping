@@ -9,7 +9,6 @@ String relay_switch()
     else
         state = 1;
     digitalWrite(RELAY, state);
-    //Serial.printf_P(PSTR("Текущий статус %s = %s \n"), RELAY, state);
     return String(state);
 }
 

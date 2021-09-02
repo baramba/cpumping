@@ -1,5 +1,6 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
+#include <ESP8266mDNS.h>
 #include <LittleFS.h>
 #include <FTPServer.h>
 #include <TickerScheduler.h>
@@ -43,6 +44,10 @@ void setup()
   }
   Serial.printf_P(PSTR("\nConnected to %s, IP address is %s\n"), ssid, WiFi.localIP().toString().c_str());
 
+  if (MDNS.begin("esp8266")) {
+    Serial.println("MDNS responder started");
+  }
+
   HTTP.begin();                   // Инициализируем Web-сервер
   ftpSrv.begin("relay", "relay"); // Инициализируем FTP-сервер
 
@@ -54,4 +59,5 @@ void loop()
   HTTP.handleClient(); // Обработчик HTTP-событий (отлавливает HTTP-запросы к устройству и обрабатывает их в соответствии с выше описанным алгоритмом)
   ftpSrv.handleFTP();  // Обработчик FTP-соединений
   taskSch.update();
+  MDNS.update();
 }

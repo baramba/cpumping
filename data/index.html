@@ -6,12 +6,29 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
     <script>
+
+        function sendHttpRequest(uri, params) {
+            var request = new XMLHttpRequest();
+            request.open('POST', uri, true);
+            request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+            request.send(params);
+            console.log("send request: " + uri + " - " + params)
+        }
+
         function relay_inverse() {
             event.preventDefault();
             var request = new XMLHttpRequest();
             request.open('GET', '/relay_switch', true);
             request.send();
             console.log("send /relay_switch")
+        }
+
+        function relay_start() {
+            event.preventDefault();
+            var switchOnSeconds = document.forms.relayStart.switchOnSeconds.value;
+            var switchOnDelay = document.forms.relayStart.switchOnDelay.value;
+            var params = 'time=' + switchOnSeconds + '&delay=' + switchOnDelay;
+            sendHttpRequest('/relay_start', params)
         }
     </script>
 </head>
@@ -23,21 +40,18 @@
                 <h2>Расписание</h2>
                 <p class="lead">Здесь можно настроить расписание</p>
             </div>
-            <form action="/switch_params">
+            <form name="relayStart" onsubmit="relay_start()">
                 <div class="mb-3">
-                    <label for="switchOnTime" class="form-label">Время включенния</label>
-                    <input type="text" class="form-control" id="switchOnTime" placeholder="12:32:00">
-                    <div id="switchOnTime" class="form-text">We'll never share your email with anyone else.</div>
+                    <label for="switchOnSeconds" class="form-label">Время работы реле</label>
+                    <input type="text" class="form-control" id="switchOnSeconds" placeholder="время в секундах" value="3">
+                    <div id="switchOnSeconds" class="form-text">Сколько секунду реле будет включено</div>
                 </div>
                 <div class="mb-3">
-                    <label for="switchOnDelay" class="form-label">Длительность включения реле</label>
-                    <input type="text" class="form-control" id="switchOnDelay" placeholder="123">
+                    <label for="switchOnDelay" class="form-label">Задержка включения реле</label>
+                    <input type="text" class="form-control" id="switchOnDelay" placeholder="время в секундах" value="3">
+                    <div id="switchOnDelay" class="form-text">Через сколько секунд реле будет включено</div>
                 </div>
-                <div class="mb-3 form-check">
-                    <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                    <label class="form-check-label" for="exampleCheck1">Check me out</label>
-                </div>
-                <button type="submit" class="btn btn-primary" id="switch_btn">Submit</button>
+                <button type="submit" class="btn btn-primary">Запустить реле</button>
             </form>
 
             <button type="submit" onclick="relay_inverse()" class="btn btn-primary">Вкл/Выкл</button>
@@ -57,9 +71,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous">
-
-
-
         </script>
 
 </body>
