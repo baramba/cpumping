@@ -19,8 +19,7 @@ FTPServer ftpSrv(LittleFS);
 
 byte RELAY = 4;
 
-extern Scheduler runner;
-extern Task t1;
+Scheduler runner;
 
 const char *ssid = "sosna-2";
 const char *password = "+79119652485MM"; // Название генерируемой точки доступа
