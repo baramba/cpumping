@@ -12,7 +12,7 @@
             request.open('POST', uri, true);
             request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
             request.send(params);
-            console.log("send request: " + uri + " - " + params)
+            console.log("send request: " + uri + " - " + params);
         }
 
         function relay_inverse() {
@@ -20,16 +20,29 @@
             var request = new XMLHttpRequest();
             request.open('GET', '/relay_switch', true);
             request.send();
-            console.log("send /relay_switch")
+            console.log("send /relay_switch");
         }
 
-        function relay_start() {
+        function relayStartOnTime() {
             event.preventDefault();
             var switchOnSeconds = document.forms.relayStart.switchOnSeconds.value;
             var switchOnDelay = document.forms.relayStart.switchOnDelay.value;
             var params = 'time=' + switchOnSeconds + '&delay=' + switchOnDelay;
-            sendHttpRequest('/relay_start', params)
+            sendHttpRequest('/relay_start', params);
         }
+        function set_time() {
+            event.preventDefault();
+            var currentTime = document.forms.setTimeForm.setTime.value;
+            var params = 'currentTime=' + currentTime;
+            sendHttpRequest('/set_time', params);
+        }
+        window.onload = function () {
+            var currentdate = new Date();
+            var localTimeStr = new Date().toLocaleTimeString();
+
+            var datetime = currentdate.getHours() + ":"+ currentdate.getMinutes() + ":" + currentdate.getSeconds() + "--" + localTimeStr;
+            document.forms.setTimeForm.setTime.value = datetime;
+        };
     </script>
 </head>
 
@@ -40,10 +53,11 @@
                 <h2>Расписание</h2>
                 <p class="lead">Здесь можно настроить расписание</p>
             </div>
-            <form name="relayStart" onsubmit="relay_start()">
+            <form name="relayStart" onsubmit="relayStartOnTime()">
                 <div class="mb-3">
                     <label for="switchOnSeconds" class="form-label">Время работы реле</label>
-                    <input type="text" class="form-control" id="switchOnSeconds" placeholder="время в секундах" value="3">
+                    <input type="text" class="form-control" id="switchOnSeconds" placeholder="время в секундах"
+                        value="3">
                     <div id="switchOnSeconds" class="form-text">Сколько секунду реле будет включено</div>
                 </div>
                 <div class="mb-3">
@@ -52,6 +66,15 @@
                     <div id="switchOnDelay" class="form-text">Через сколько секунд реле будет включено</div>
                 </div>
                 <button type="submit" class="btn btn-primary">Запустить реле</button>
+            </form>
+
+            <form name="setTimeForm" onsubmit="set_time()">
+                <div class="mb-3">
+                    <label for="setTime" class="form-label">Установить текущее время</label>
+                    <input type="text" class="form-control" id="setTime" placeholder="время в секундах" value="3">
+                    <!-- <div id="setTime" class="form-text">Сколько секунду реле будет включено</div> -->
+                </div>
+                <button type="submit" class="btn btn-primary">Установить время</button>
             </form>
 
             <button type="submit" onclick="relay_inverse()" class="btn btn-primary">Вкл/Выкл</button>

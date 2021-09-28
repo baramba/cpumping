@@ -1,23 +1,32 @@
 #include <Arduino.h>
-#include <pumper.h>
+#include <Relay.h>
+#include <TaskSchedulerDeclarations.h>
 
-String relay_switch()
+Relay::Relay(int controlPin)
 {
-    byte state;
-    if (digitalRead(RELAY))
-        state = 0;
-    else
-        state = 1;
-    digitalWrite(RELAY, state);
-    return String(state);
+    _controlPin = controlPin;
+    pinMode(controlPin, OUTPUT);
 }
 
-String relay_status()
+//получить статус реле
+int Relay::getStatus() { return digitalRead(_controlPin); }
+
+//закрыть реле 
+void Relay::close()
 {
-    byte state;
-    if (digitalRead(RELAY))
-        state = 1;
-    else
-        state = 0;
-    return String(state);
+    digitalWrite(_controlPin, 0);
+}
+
+//открыть реле
+void Relay::open()
+{
+    digitalWrite(_controlPin, 1);
+}
+
+// запустить задачу через TaskScheduler
+void Relay::startTask()
+{
+    //Task t1(3000, TASK_ONCE, []{relay_switch();}, &runner, true);
+    Serial.println("Start t1 TASK_ONCE");
+
 }

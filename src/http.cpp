@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <pumper.h>
+#include <ctime>
 
 void httpInit()
 {
@@ -15,8 +16,14 @@ void httpInit()
                         int time = HTTP.arg("time").toInt();
                         int delay = HTTP.arg("delay").toInt();
                         relay_start(time, delay);
-                        HTTP.send(200, "text/plain", HTTP.arg("time") + "--" + HTTP.arg("delay") + "--" + HTTP.args() );
-        });
+                        HTTP.send(200, "text/plain", HTTP.arg("time") + "--" + HTTP.arg("delay") + "--" + HTTP.args());
+                });
+        HTTP.on("/relay_start_on_time", []()
+                {
+                        String curentTime = HTTP.arg("currentTime");
+                        // set_current_time(curentTime);
+                        HTTP.send(200, "text/plain", HTTP.arg("currentTime"));
+                });
         HTTP.on("/list", []()
                 {
                         String str = "";
@@ -35,9 +42,10 @@ void httpInit()
         HTTP.onNotFound([]()
                         {
                                 if (!handleFileRead(HTTP.uri()))
+                                {
                                         HTTP.send(404, "text/plain", "Not found - " + HTTP.uri());
+                                }
                         });
-
 }
 
 String getContentType(String filename)
@@ -65,11 +73,11 @@ bool handleFileRead(String path)
                 path += "index.html";
         String contentType = getContentType(path); // С помощью функции getContentType (описана ниже) определяем по типу файла (в адресе обращения) какой заголовок необходимо возвращать по его вызову
         if (LittleFS.exists(path))
-        {                                                         // Если в файловой системе существует файл по адресу обращения
-                File file = LittleFS.open(path, "r");             //  Открываем файл для чтения
-                size_t sent = HTTP.streamFile(file, contentType); //  Выводим содержимое файла по HTTP, указывая заголовок типа содержимого contentType
-                file.close(); //  Закрываем файл
-                return true;  //  Завершаем выполнение функции, возвращая результатом ее исполнения true (истина)
+        {                                             // Если в файловой системе существует файл по адресу обращения
+                File file = LittleFS.open(path, "r"); //  Открываем файл для чтения
+                HTTP.streamFile(file, contentType);   //  Выводим содержимое файла по HTTP, указывая заголовок типа содержимого contentType
+                file.close();                         //  Закрываем файл
+                return true;                          //  Завершаем выполнение функции, возвращая результатом ее исполнения true (истина)
         }
         return false; // Завершаем выполнение функции, возвращая результатом ее исполнения false (если не обработалось предыдущее условие)
 }
